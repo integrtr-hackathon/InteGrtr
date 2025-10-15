@@ -41,6 +41,10 @@ const roleSchema = new mongoose.Schema(
       default: [],
     },
     permissions: permissionSchema,
+    assignedGroups: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'PermissionGroup'
+    }],
   },
   { timestamps: true }
 );
