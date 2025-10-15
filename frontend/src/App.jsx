@@ -7,6 +7,7 @@ import PermissionGroupDetail from './pages/PermissionGroupDetail'
 import PermissionGroupForm from './pages/PermissionGroupForm'
 import EmployeePortal from './pages/EmployeePortal'
 import TestAPI from './pages/TestAPI'
+import Users from './pages/Users'
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/test-api" element={<TestAPI />} />
+                <Route path="/users" element={<Users />} />
                 <Route path="/admin/permissions" element={<AdminPermissions />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/permission-groups" element={<PermissionGroups />} />

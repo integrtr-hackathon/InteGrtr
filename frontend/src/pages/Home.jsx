@@ -10,11 +10,11 @@ function Home() {
 
   const quickActions = [
     { label: 'Permission Groups', path: '/permission-groups', icon: Users, color: 'bg-blue-500' },
+    { label: 'Users', path: '/users', icon: UserCircle, color: 'bg-indigo-500' },
     { label: 'Roles', path: '/admin/permissions', icon: Shield, color: 'bg-purple-500' },
     { label: 'Admin Dashboard', path: '/admin/dashboard', icon: LayoutDashboard, color: 'bg-green-500' },
     { label: 'Employee Portal', path: '/employee/demo-user', icon: UserCircle, color: 'bg-orange-500' },
-    { label: 'Reports', path: '/reports', icon: FileText, color: 'bg-pink-500' },
-    { label: 'Settings', path: '/settings', icon: Settings, color: 'bg-gray-500' }
+    { label: 'Test API', path: '/test-api', icon: Settings, color: 'bg-gray-500' }
   ]
 
   return (

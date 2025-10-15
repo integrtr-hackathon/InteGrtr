@@ -23,7 +23,7 @@ function PermissionGroupDetail() {
 
   const fetchGroupDetails = async () => {
     try {
-      const response = await axios.get(`/api/permission-groups/${id}`)
+      const response = await axios.get(`http://localhost:5000/api/groups/`)
       setGroup(response.data)
       setLoading(false)
     } catch (error) {

@@ -35,6 +35,11 @@ app.use("/api/roles", roleRoutes);
 app.use("/api/permission-groups", permissionGroupRoutes);
 app.use("/api/users", userRoutes);
 
+// Error handling middleware (must be last)
+import { errorHandler, notFound } from "./middleware/errorHandler.js";
+app.use(notFound);
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

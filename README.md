@@ -2,30 +2,20 @@
 
 Full-stack application for managing SAP SuccessFactors permission groups, roles, and employee data with Admin and Employee portals.
 
-## Project Structure
+## 🚀 Quick Start
 
-```
-├── backend/              # Node.js + Express API
-│   ├── controllers/      # Request handlers
-│   ├── models/          # MongoDB schemas
-│   ├── routes/          # API routes
-│   ├── utils/           # Helper functions & data seeding
-│   ├── scripts/         # Utility scripts (seed data)
-│   └── database/        # MongoDB connection
-│
-└── frontend/            # React + Vite + shadcn/ui
-    ├── src/
-    │   ├── components/  # Reusable UI components
-    │   │   └── ui/      # shadcn/ui components
-    │   ├── pages/       # Page components
-    │   └── lib/         # Utilities
-    └── public/
+### Prerequisites
+- Node.js (v16+)
+- MongoDB
+
+### Setup (3 Steps)
+
+1. **Start MongoDB**
+```cmd
+mongod
 ```
 
-## Quick Start
-
-### 1. Backend Setup
-
+2. **Start Backend**
 ```cmd
 cd backend
 npm install
@@ -33,118 +23,184 @@ npm run seed
 npm run dev
 ```
 
-Backend runs on http://localhost:5000
-
-### 2. Frontend Setup
-
+3. **Start Frontend** (new terminal)
 ```cmd
 cd frontend
 npm install
 npm run dev
 ```
 
-Frontend runs on http://localhost:3000
-
-### 3. Access the App
-
+### Access the App
 - **Home**: http://localhost:3000
+- **Test API**: http://localhost:3000/test-api
 - **Permission Groups**: http://localhost:3000/permission-groups
 - **Admin Dashboard**: http://localhost:3000/admin/dashboard
 - **Employee Portal**: http://localhost:3000/employee/demo-user
 
-## Features
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| **START_HERE.md** | Quick 3-step setup guide |
+| **FINAL_SETUP.md** | Complete setup with verification |
+| **TROUBLESHOOTING.md** | Fix common issues |
+| **USER_GUIDE.md** | How to use all features |
+| **QUICK_ACTIVITIES.md** | Quick reference for tasks |
+| **DATA_SOURCE_INFO.md** | Database structure & API info |
+| **PROJECT_STRUCTURE.md** | Code organization |
+
+## ✨ Features
 
 ### Admin Portal
-- **Permission Groups Management**: Create, edit, delete groups with dynamic/static membership
-- **Role Management**: Manage permission roles and link them to groups
-- **User Management**: View and manage employee data
-- **Admin Dashboard**: View charts, statistics, and system health
-- **People Pool Criteria**: Define include/exclude rules (department, location, job title, etc.)
+- ✅ Create, edit, delete permission groups
+- ✅ Dynamic groups (auto-calculated members)
+- ✅ Static groups (manual members)
+- ✅ Link roles to groups
+- ✅ People Pool criteria (department, location, etc.)
+- ✅ Search and pagination
+- ✅ Dashboard with charts
 
 ### Employee Portal
-- **Profile View**: View personal information
-- **Groups & Roles**: See assigned permission groups and roles
-- **Access Summary**: View all permissions and access levels
+- ✅ View personal profile
+- ✅ See assigned permission groups
+- ✅ View roles and access rights
+- ✅ Access summary
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 **Backend:**
 - Node.js + Express
 - MongoDB + Mongoose
+- CORS enabled
 - Multer for file uploads
 
 **Frontend:**
 - React 18 + Vite
 - shadcn/ui + Tailwind CSS
 - React Router
-- Recharts for data visualization
+- Recharts for charts
 - Axios for API calls
 - Lucide React icons
 
-## Environment Setup
+## 📊 Sample Data
 
-### Backend `.env` file:
-```env
-PORT=5000
-MONGO_URL=mongodb://localhost:27017/integrtr
-```
+After running `npm run seed`:
+- 4 Users (demo-user, EMP001, EMP002, EMP003)
+- 3 Permission Groups (Engineering Team, HR Administrators, All Employees)
+- 3 Roles (HR Administrator, Manager, Employee Self-Service)
 
-### Prerequisites
-- Node.js (v16+)
-- MongoDB (running locally or MongoDB Atlas)
-
-## Sample Data
-
-Run `npm run seed` in backend to create:
-- 4 sample users (demo-user, EMP001, EMP002, EMP003)
-- 3 permission groups (Engineering Team, HR Administrators, All Employees)
-- 3 roles (HR Administrator, Manager, Employee Self-Service)
-
-## API Endpoints
+## 🔗 API Endpoints
 
 ### Permission Groups
-- `GET /api/permission-groups` - Get all groups (search & pagination)
-- `GET /api/permission-groups/:id` - Get single group with members
-- `POST /api/permission-groups` - Create new group
+- `GET /api/permission-groups` - List all groups
+- `GET /api/permission-groups/:id` - Get group details
+- `POST /api/permission-groups` - Create group
 - `PUT /api/permission-groups/:id` - Update group
 - `DELETE /api/permission-groups/:id` - Delete group
-- `POST /api/permission-groups/:id/link-role` - Link role to group
+- `POST /api/permission-groups/:id/link-role` - Link role
 - `DELETE /api/permission-groups/:id/unlink-role/:roleId` - Unlink role
 
 ### Users
-- `GET /api/users` - Get all users
-- `GET /api/users/:userId` - Get user with groups and roles
+- `GET /api/users` - List all users
+- `GET /api/users/:userId` - Get user details
 - `POST /api/users` - Create user
 - `PUT /api/users/:userId` - Update user
 - `DELETE /api/users/:userId` - Delete user
 
 ### Roles
-- `GET /api/roles` - Get all roles
-- `GET /api/roles/:id` - Get role by ID
-- `POST /api/roles/import` - Import roles from file
+- `GET /api/roles` - List all roles
+- `GET /api/roles/:id` - Get role details
+- `POST /api/roles/import` - Import roles
 
-## Troubleshooting
+## 🧪 Testing
 
-### Backend won't start?
-- Make sure MongoDB is running: `mongod`
-- Check `.env` file exists in backend folder
-- Verify MONGO_URL is correct
+Visit **http://localhost:3000/test-api** to test API connections.
 
-### Frontend shows connection errors?
-- Make sure backend is running on port 5000
-- Check browser console for specific errors
+## 🐛 Troubleshooting
 
-### Port already in use?
-- Change PORT in `backend/.env`
-- Update proxy in `frontend/vite.config.js`
+### Data not showing?
+1. Check backend is running: `cd backend && npm run dev`
+2. Check MongoDB is running: `mongod`
+3. Seed database: `cd backend && npm run seed`
+4. Visit test page: http://localhost:3000/test-api
 
-## Development
+### CORS errors?
+1. Restart backend server (CORS changes need restart)
+2. Clear browser cache (Ctrl+Shift+R)
 
-- Frontend proxies API requests to backend automatically
-- Dynamic groups recalculate members based on criteria
-- All timestamps tracked for audit purposes
-- Search and pagination on all list views
+### More help?
+See **TROUBLESHOOTING.md** for detailed debugging.
 
-## License
+## 📁 Project Structure
+
+```
+├── backend/              # Node.js + Express API
+│   ├── controllers/      # Business logic
+│   ├── models/          # MongoDB schemas
+│   ├── routes/          # API routes
+│   ├── utils/           # Helper functions
+│   └── scripts/         # Seed script
+│
+└── frontend/            # React + Vite
+    ├── src/
+    │   ├── components/  # Reusable components
+    │   │   └── ui/      # shadcn/ui components
+    │   ├── pages/       # Page components
+    │   └── lib/         # Utilities
+    └── public/
+```
+
+## 🎯 Key Features Explained
+
+### Dynamic Groups
+Members are automatically calculated based on criteria:
+- Include: `department = "Engineering"` → Includes all engineering employees
+- Exclude: `location = "Remote"` → Excludes remote workers
+- Updates automatically when user data changes
+
+### Static Groups
+Members are added manually and don't change automatically.
+
+### People Pool Criteria
+Available categories:
+- department, location, country, jobTitle
+- division, gender, userType
+
+## 🚢 Deployment
+
+### Backend
+- Deploy to: Heroku, Railway, Render
+- Use MongoDB Atlas for database
+
+### Frontend
+- Deploy to: Vercel, Netlify, GitHub Pages
+- Update API URL in production
+
+## 📝 Environment Variables
+
+### backend/.env
+```env
+PORT=5000
+MONGO_URL=mongodb://localhost:27017/integrtr
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Open pull request
+
+## 📄 License
 
 ISC
+
+## 🔗 Links
+
+- **Repository**: https://github.com/integrtr-hackathon/InteGrtr
+- **Issues**: Report bugs or request features
+
+---
+
+**Made with ❤️ for SAP SuccessFactors Integration**
