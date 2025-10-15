@@ -4,7 +4,7 @@ import { User } from "../models/user.models.js";
 // GET /api/permission-groups - Get all permission groups
 export const getPermissionGroups = async (req, res) => {
   try {
-    const { search, userType, page = 1, limit = 10 } = req.query;
+    const { search, userType, status, page = 1, limit = 10 } = req.query;
     
     const query = {};
     if (search) {
@@ -12,6 +12,9 @@ export const getPermissionGroups = async (req, res) => {
     }
     if (userType) {
       query.userType = userType;
+    }
+    if (status) {
+      query.status = status;
     }
 
     const skip = (page - 1) * limit;
@@ -41,9 +44,17 @@ export const getPermissionGroups = async (req, res) => {
 // GET /api/permission-groups/:id - Get single permission group
 export const getPermissionGroupById = async (req, res) => {
   try {
-    const group = await PermissionGroup.findOne({ groupId: req.params.id })
+    // Try to find by groupId (numeric) first, then by _id (MongoDB ObjectId)
+    let group = await PermissionGroup.findOne({ groupId: parseInt(req.params.id) })
       .populate('members', 'userId name email department jobTitle')
       .populate('relatedPermissionRoles', 'name role_id description');
+
+    // If not found by groupId, try by _id
+    if (!group) {
+      group = await PermissionGroup.findById(req.params.id)
+        .populate('members', 'userId name email department jobTitle')
+        .populate('relatedPermissionRoles', 'name role_id description');
+    }
 
     if (!group) {
       return res.status(404).json({ message: "Permission group not found" });
@@ -98,7 +109,13 @@ export const updatePermissionGroup = async (req, res) => {
   try {
     const { groupName, userType, type, isRbpOnly, includeCriteria, excludeCriteria, members } = req.body;
 
-    const group = await PermissionGroup.findOne({ groupId: req.params.id });
+    // Try to find by groupId (numeric) first, then by _id
+    let group = await PermissionGroup.findOne({ groupId: parseInt(req.params.id) });
+    
+    if (!group) {
+      group = await PermissionGroup.findById(req.params.id);
+    }
+
     if (!group) {
       return res.status(404).json({ message: "Permission group not found" });
     }
@@ -133,8 +150,13 @@ export const updatePermissionGroup = async (req, res) => {
 // DELETE /api/permission-groups/:id - Delete permission group
 export const deletePermissionGroup = async (req, res) => {
   try {
-    const group = await PermissionGroup.findOneAndDelete({ groupId: req.params.id });
+    // Try to find by groupId (numeric) first, then by _id
+    let group = await PermissionGroup.findOneAndDelete({ groupId: parseInt(req.params.id) });
     
+    if (!group) {
+      group = await PermissionGroup.findByIdAndDelete(req.params.id);
+    }
+
     if (!group) {
       return res.status(404).json({ message: "Permission group not found" });
     }
@@ -184,7 +206,13 @@ export const linkRoleToGroup = async (req, res) => {
   try {
     const { roleId } = req.body;
     
-    const group = await PermissionGroup.findOne({ groupId: req.params.id });
+    // Try to find by groupId (numeric) first, then by _id
+    let group = await PermissionGroup.findOne({ groupId: parseInt(req.params.id) });
+    
+    if (!group) {
+      group = await PermissionGroup.findById(req.params.id);
+    }
+
     if (!group) {
       return res.status(404).json({ message: "Permission group not found" });
     }
@@ -205,7 +233,13 @@ export const linkRoleToGroup = async (req, res) => {
 // DELETE /api/permission-groups/:id/unlink-role/:roleId - Unlink role from group
 export const unlinkRoleFromGroup = async (req, res) => {
   try {
-    const group = await PermissionGroup.findOne({ groupId: req.params.id });
+    // Try to find by groupId (numeric) first, then by _id
+    let group = await PermissionGroup.findOne({ groupId: parseInt(req.params.id) });
+    
+    if (!group) {
+      group = await PermissionGroup.findById(req.params.id);
+    }
+
     if (!group) {
       return res.status(404).json({ message: "Permission group not found" });
     }

@@ -12,13 +12,13 @@ const roleSchema = new mongoose.Schema(
       unique: true, 
       index: true,
     },
-    name: {
+    role_name: {
       type: String,
       required: true,
     },
-    userType: {
+    role_type: {
       type: String,
-      required: true,
+      default: "RULE_BASE_ROLE",
     },
     description: {
       type: String,
@@ -26,8 +26,36 @@ const roleSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "inactive"],
-      default: "active",
+      enum: ["ACTIVE", "INACTIVE", "active", "inactive"],
+      default: "ACTIVE",
+    },
+    user_type: {
+      type: String,
+      required: false,
+    },
+    sub_domain: {
+      type: String,
+      required: false,
+    },
+    visibility_type: {
+      type: String,
+      default: "VISIBILITY",
+    },
+    created: {
+      type: Date,
+    },
+    last_modified: {
+      type: Date,
+    },
+    last_modified_utc: {
+      type: String,
+    },
+    // Legacy fields for backward compatibility
+    name: {
+      type: String,
+    },
+    userType: {
+      type: String,
     },
     rbpOnly: {
       type: Boolean,

@@ -40,11 +40,36 @@ export const importRoles = async (req, res) => {
   }
 };
 
-// GET /api/roles — fetch all roles
+// GET /api/roles — fetch all roles with pagination
 export const getRoles = async (req, res) => {
   try {
-    const roles = await Role.find();
-    res.json(roles);
+    const { search, page = 1, limit = 10 } = req.query;
+    
+    const query = {};
+    if (search) {
+      query.$or = [
+        { role_name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+    
+    const roles = await Role.find(query)
+      .skip(skip)
+      .limit(parseInt(limit))
+      .sort({ last_modified: -1 });
+
+    const total = await Role.countDocuments(query);
+
+    res.json({
+      data: roles,
+      pagination: {
+        totalResults: total,
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(total / limit)
+      }
+    });
   } catch (error) {
     console.error("Fetch error:", error);
     res.status(500).json({ message: "Failed to fetch data" });

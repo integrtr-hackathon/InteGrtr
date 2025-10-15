@@ -21,22 +21,42 @@ function AdminDashboard() {
 
     const fetchDashboardData = async () => {
         try {
+            setLoading(true)
+            
+            // Fetch permission groups
+            const groupsRes = await axios.get('http://localhost:5000/api/permission-groups/', {
+                params: { limit: 100 }
+            })
+            const permissionGroups = groupsRes.data.groups || []
             setGroups(permissionGroups)
 
-            // Fetch users for accurate stats
-            const usersRes = await axios.get('/api/users?limit=1000')
-            const users = usersRes.data.users || []
+            // Fetch roles
+            const rolesRes = await axios.get('http://localhost:5000/api/roles', {
+                params: { limit: 100 }
+            })
+            const rolesData = rolesRes.data.data || rolesRes.data || []
+            setRoles(rolesData)
+
+            // Fetch users
+            const usersRes = await axios.get('http://localhost:5000/api/users', {
+                params: { limit: 1000 }
+            })
+            const users = usersRes.data.users || usersRes.data || []
 
             const totalMembers = permissionGroups.reduce((sum, g) => sum + (g.activeMembershipCount || 0), 0)
             const activeUsers = users.filter(u => u.status === 'active').length
 
             setStats({
                 totalGroups: permissionGroups.length,
+                totalRoles: rolesData.length,
+                totalUsers: users.length,
                 totalMembers: totalMembers,
                 activeMembers: activeUsers
             })
         } catch (error) {
             console.error('Error fetching dashboard data:', error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -60,6 +80,9 @@ function AdminDashboard() {
             <main className="container mx-auto p-6 space-y-6">
                 <h2 className="text-3xl font-bold">Admin Centre Dashboard</h2>
 
+                {loading ? (
+                    <div className="text-center py-12 text-muted-foreground">Loading dashboard...</div>
+                ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <Card>
                         <CardHeader>
@@ -88,8 +111,12 @@ function AdminDashboard() {
                                 <strong className="text-2xl">{stats.totalGroups}</strong>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-muted-foreground">Total Members:</span>
-                                <strong className="text-2xl">{stats.totalMembers}</strong>
+                                <span className="text-muted-foreground">Total Roles:</span>
+                                <strong className="text-2xl">{stats.totalRoles}</strong>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-muted-foreground">Total Users:</span>
+                                <strong className="text-2xl">{stats.totalUsers}</strong>
                             </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-muted-foreground">Active Members:</span>
@@ -138,6 +165,7 @@ function AdminDashboard() {
                         </CardContent>
                     </Card>
                 </div>
+                )}
             </main>
         </div>
     )

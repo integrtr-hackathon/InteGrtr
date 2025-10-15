@@ -23,7 +23,7 @@ function PermissionGroupDetail() {
 
   const fetchGroupDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/groups/`)
+      const response = await axios.get(`http://localhost:5000/api/permission-groups/${id}`)
       setGroup(response.data)
       setLoading(false)
     } catch (error) {
@@ -34,8 +34,8 @@ function PermissionGroupDetail() {
 
   const fetchAvailableRoles = async () => {
     try {
-      const response = await axios.get('/api/roles')
-      setAvailableRoles(response.data)
+      const response = await axios.get('http://localhost:5000/api/roles')
+      setAvailableRoles(response.data.roles || response.data || [])
     } catch (error) {
       console.error('Error fetching roles:', error)
     }
@@ -45,7 +45,7 @@ function PermissionGroupDetail() {
     if (!selectedRole) return
     
     try {
-      await axios.post(`/api/permission-groups/${id}/link-role`, {
+      await axios.post(`http://localhost:5000/api/permission-groups/${id}/link-role`, {
         roleId: selectedRole
       })
       fetchGroupDetails()
@@ -58,7 +58,7 @@ function PermissionGroupDetail() {
 
   const handleUnlinkRole = async (roleId) => {
     try {
-      await axios.delete(`/api/permission-groups/${id}/unlink-role/${roleId}`)
+      await axios.delete(`http://localhost:5000/api/permission-groups/${id}/unlink-role/${roleId}`)
       fetchGroupDetails()
     } catch (error) {
       console.error('Error unlinking role:', error)

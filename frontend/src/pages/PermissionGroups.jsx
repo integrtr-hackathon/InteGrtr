@@ -14,37 +14,41 @@ function PermissionGroups() {
   const [groups, setGroups] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 })
 
   useEffect(() => {
     fetchGroups()
-  }, [pagination.page, search])
+  }, [pagination.page, search, statusFilter])
 
   const fetchGroups = async () => {
     try {
-      setLoading(true)
-      const response = await axios.get('http://localhost:5000/api/groups/')
-      
-      if (Array.isArray(response.data)) {
-      setGroups(response.data);
-      setPagination({ page: 1, pages: 1, total: response.data.length });
-    } else {
-      setGroups(response.data.groups || []);
-      setPagination(response.data.pagination || { page: 1, pages: 1, total: 0 });
-    }
+      const response = await axios.get("http://localhost:5000/api/groups/");
 
-    setLoading(false);
+      // If backend sends a plain array:
+      if (Array.isArray(response.data)) {
+        setGroups(response.data);
+        setPagination({ page: 1, pages: 1, total: response.data.length });
+      } else {
+        setGroups(response.data.groups || []);
+        setPagination(response.data.pagination || { page: 1, pages: 1, total: 0 });
+      }
+
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching groups:', error)
+      setGroups([])
+      setPagination({ page: 1, pages: 1, total: 0 })
+    } finally {
       setLoading(false)
     }
   }
 
   const handleDelete = async (groupId) => {
     if (!window.confirm('Are you sure you want to delete this group?')) return
-    
+
     try {
-      await axios.delete(`/api/groups/${groupId}`)
+      await axios.delete(`http://localhost:5000/api/permission-groups/${groupId}`)
       fetchGroups()
     } catch (error) {
       console.error('Error deleting group:', error)
@@ -55,7 +59,7 @@ function PermissionGroups() {
   return (
     <div className="min-h-screen bg-background">
       <Header title="Admin Centre" />
-      
+
       <main className="container mx-auto p-6">
         <Card>
           <CardHeader>
@@ -64,7 +68,7 @@ function PermissionGroups() {
                 <CardTitle className="text-2xl">Manage Permission Groups</CardTitle>
                 <CardDescription>Create and manage permission groups with dynamic membership</CardDescription>
               </div>
-              <Button onClick={() => navigate('/groups/new')}>
+              <Button onClick={() => navigate('/permission-groups/new')}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create New Group
               </Button>
@@ -75,10 +79,25 @@ function PermissionGroups() {
                 <Input
                   placeholder="Search groups..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    setSearch(e.target.value)
+                    setPagination(prev => ({ ...prev, page: 1 }))
+                  }}
                   className="pl-8"
                 />
               </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value)
+                  setPagination(prev => ({ ...prev, page: 1 }))
+                }}
+                className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+              >
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
             </div>
           </CardHeader>
           <CardContent>
@@ -97,6 +116,7 @@ function PermissionGroups() {
                       <TableHead>Group Name</TableHead>
                       <TableHead>User Type</TableHead>
                       <TableHead>Type</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead>RBP Only</TableHead>
                       <TableHead>Active Members</TableHead>
                       <TableHead>Last Modified</TableHead>
@@ -110,7 +130,7 @@ function PermissionGroups() {
                           <Button
                             variant="link"
                             className="p-0 h-auto font-medium"
-                            onClick={() => navigate(`/groups/${group.groupId}`)}
+                            onClick={() => navigate(`/permission-groups/${group.groupId}`)}
                           >
                             {group.groupName}
                           </Button>
@@ -121,12 +141,17 @@ function PermissionGroups() {
                             {group.type}
                           </Badge>
                         </TableCell>
+                        <TableCell>
+                          <Badge variant={group.status === 'active' ? 'default' : 'destructive'}>
+                            {group.status?.toUpperCase() || 'ACTIVE'}
+                          </Badge>
+                        </TableCell>
                         <TableCell>{group.isRbpOnly ? 'Yes' : 'No'}</TableCell>
                         <TableCell>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => navigate(`/groups/${group.groupId}/members`)}
+                            onClick={() => navigate(`/permission-groups/${group.groupId}/members`)}
                           >
                             {group.activeMembershipCount}
                           </Button>
@@ -157,13 +182,13 @@ function PermissionGroups() {
 
                 <div className="flex items-center justify-between mt-4">
                   <p className="text-sm text-muted-foreground">
-                    Showing {groups.length} of {pagination.total} groups
+                    Showing {groups.length} of {pagination.total} groups (Page {pagination.page} of {pagination.pages})
                   </p>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={pagination.page === 1}
+                      disabled={pagination.page === 1 || loading}
                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                     >
                       Previous
@@ -171,7 +196,7 @@ function PermissionGroups() {
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={pagination.page === pagination.pages}
+                      disabled={pagination.page >= pagination.pages || loading}
                       onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                     >
                       Next

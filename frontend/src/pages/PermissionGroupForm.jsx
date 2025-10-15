@@ -37,7 +37,7 @@ function PermissionGroupForm() {
     setLoading(true)
 
     try {
-      const response = await axios.post('/api/permission-groups', formData)
+      const response = await axios.post('http://localhost:5000/api/permission-groups', formData)
       alert('Permission group created successfully!')
       navigate(`/permission-groups/${response.data.group.groupId}`)
     } catch (error) {
